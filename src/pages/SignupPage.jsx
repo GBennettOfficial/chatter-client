@@ -2,6 +2,7 @@ import React from 'react'
 import { useAuthStore } from '../store/useAuthStore';
 import { MessageSquare, User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AuthImagePatterrn from '../components/AuthImagePattern';
 
 const SignupPage = () => {
 
@@ -39,7 +40,7 @@ const SignupPage = () => {
                             <div className='flex flex-row items-center  pb-1'>
                                 <User className='size-8 mr-2 text-base-content/40' />
                                 <label className="label">
-                                    <span className="label-text font-medium">Email</span>
+                                    <span className="label-text font-medium">Full Name</span>
                                 </label>
                             </div>
                             <div className="relative">
@@ -58,7 +59,7 @@ const SignupPage = () => {
                             <div className='flex flex-row items-center pb-1'>
                                 <Mail className='size-8 mr-2 text-base-content/40' />
                                 <label className="label">
-                                    <span className="label-text font-medium">Full Name</span>
+                                    <span className="label-text font-medium">Email</span>
                                 </label>
                             </div>
                             <div className="relative">
@@ -76,7 +77,7 @@ const SignupPage = () => {
                             <div className='flex flex-row items-center  pb-1'>
                                 <Lock className='size-8 mr-2 text-base-content/40' />
                                 <label className="label">
-                                    <span className="label-text font-medium">Email</span>
+                                    <span className="label-text font-medium">Password</span>
                                 </label>
                             </div>
                             <div className="relative">
@@ -113,19 +114,16 @@ const SignupPage = () => {
                     </form>
                     <div className='text-center'>
                         <p className='text-base-content/60'>
-                        Already have an account? {" "}
-                        <Link to='/login' className='link link-primary'>Sign in</Link>
+                            Already have an account? {" "}
+                            <Link to='/login' className='link link-primary'>Sign in</Link>
                         </p>
                     </div>
                 </div>
             </div>
-
             <AuthImagePatterrn
                 title='Join our community'
                 subtitle='Connect with friends, share moments, and stay in touch wuth the people you care about.'
-                />
-
-
+            />
         </div>
     )
 }
