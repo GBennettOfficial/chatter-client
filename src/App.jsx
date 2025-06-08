@@ -9,6 +9,7 @@ import { useAuthStore } from "./store/useAuthStore.js"
 import { useEffect } from "react"
 import { Loader } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
+import { useThemeStore } from "./store/useThemeStore.js"
 
 function App() {
 
@@ -17,6 +18,8 @@ function App() {
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
+
+  const { theme } = useThemeStore()
 
   console.log(authUser);
 
@@ -29,7 +32,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div data-theme={theme} className="min-h-screen">
       <Navbar />
       <Routes>
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />

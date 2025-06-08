@@ -19,7 +19,7 @@ const LoginPage = () => {
   }
 
   return (
-<div className='min-g-screen grid lg:grid-cols-2 mt-12'>
+<div className='min-g-screen grid lg:grid-cols-2 pt-20'>
             <div className='flex flex-col justify-center items-center p-6 sm:p-12'>
                 <div className='w-full max-w-md space-y-8'>
                     <div className='text-center mb-8'>
