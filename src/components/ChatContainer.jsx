@@ -23,7 +23,7 @@ const ChatContainer = () => {
     if (messageEndRef.current && messages) {
       const timer = setTimeout(() => {
         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [messages]);

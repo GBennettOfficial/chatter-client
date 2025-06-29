@@ -98,7 +98,8 @@ export const useAuthStore = create((set, get) => {
                 const authUser = get().authUser;
                 console.log(authUser);
                 if (!authUser) return;
-                const socket = io("https://chatty-api-m3oi.onrender.com", {
+                const socket = io(import.meta.env.MODE === 'development' ? 
+                    'http://localhost:5001' : "https://chatty-api-m3oi.onrender.com", {
                     query: {
                         userId: authUser._id,
                     }
