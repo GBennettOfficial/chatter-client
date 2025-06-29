@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAuthStore } from '../store/useAuthStore.js'
-import { MessageSquare, LogOut, Settings } from 'lucide-react'
+import { MessageSquare, LogOut, Settings, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Navbar = () => {
@@ -18,13 +18,18 @@ const Navbar = () => {
             </Link>
           </div>
           <div className='flex items-center gap-2'>
+            <Link to='/profile'
+              className='btn btn-sm gap-2 transition-colors'>
+              <User className='size-4' />
+              <span className='hidden sm:inline'>Profile</span>
+            </Link>
             <Link to='/settings'
               className='btn btn-sm gap-2 transition-colors'>
               <Settings className='size-4' />
               <span className='hidden sm:inline'>Settings</span>
             </Link>
             <button className='btn btn-sm flex gap-2 items-center' onClick={logout}>
-              <LogOut className='size-5' />
+              <LogOut className='size-4' />
               <span className='hidden sm:inline'>Logout</span>
             </button>
           </div>
