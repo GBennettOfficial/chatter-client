@@ -3,8 +3,9 @@ import axios from 'axios';
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios.js';
 import { toast } from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
-export const useAuthStore = create((set) => {
+export const useAuthStore = create((set, get) => {
     return {
         authUser: null,
         isSigningUp: false,
@@ -12,17 +13,22 @@ export const useAuthStore = create((set) => {
         isUpdatingProfile: false,
         isCheckingAuth: true,
         onlineUsers: [],
+        socket: null,
 
         checkAuth: async () => {
             try {
                 const res = await axiosInstance.get('auth/check');
-                set({authUser: res.data})
+                if (res.status === 200) {
+                    set({ authUser: res.data })
+                    get().connectSocket();
+                    toast.success("Logged in successfully!");
+                }
             } catch (error) {
                 console.log("Error checking auth:", error);
-                set({authUser: null})
+                set({ authUser: null })
             }
             finally {
-                set({isCheckingAuth: false})
+                set({ isCheckingAuth: false })
             }
         },
 
@@ -30,8 +36,11 @@ export const useAuthStore = create((set) => {
             try {
                 set({ isSigningUp: true });
                 const res = await axiosInstance.post('auth/signup', data);
-                set({ authUser: res.data });
-                toast.success("Account created successfully!");
+                if (res.status === 200) {
+                    set({ authUser: res.data })
+                    get().connectSocket();
+                    toast.success("Account created successfully!");
+                }
             } catch (error) {
                 toast.error(error.response?.data?.message || "Error signing up. Please try again.");
                 console.error("Error signing up:", error);
@@ -44,8 +53,11 @@ export const useAuthStore = create((set) => {
             try {
                 set({ isLoggingIn: true });
                 const res = await axiosInstance.post('auth/login', data);
-                set({ authUser: res.data });
-                toast.success("Logged in successfully!");
+                if (res.status === 200) {
+                    set({ authUser: res.data })
+                    get().connectSocket();
+                    toast.success("Logged in successfully!");
+                }
             } catch (error) {
                 toast.error(error.response?.data?.message || "Error logging in. Please try again.");
                 console.error("Error logging in:", error);
@@ -57,6 +69,7 @@ export const useAuthStore = create((set) => {
         logout: async () => {
             try {
                 axiosInstance.post('auth/logout');
+                get().disconnectSocket();
                 set({ authUser: null });
                 toast.success("Logged out successfully!");
             } catch (error) {
@@ -78,6 +91,35 @@ export const useAuthStore = create((set) => {
             finally {
                 set({ isUpdatingProfile: false });
             }
+        },
+
+        connectSocket: () => {
+            try {
+                const authUser = get().authUser;
+                console.log(authUser);
+                if (!authUser) return;
+                const socket = io("http://localhost:5001", {
+                    query: {
+                        userId: authUser._id,
+                    }
+                });
+                socket.connect();
+                set({ socket: socket });
+                socket.on("getOnlineUsers", (userIds) => {
+                    set({ onlineUsers: userIds });
+                    console.log("Online users:", userIds);
+                })
+                if (socket.connected) {
+                    console.log("Socket connected");
+                }
+            } catch (error) {
+                console.log("error connecting socket:", error);
+                toast.error("Error connecting to socket. Please try again.");
+            }
+        },
+
+        disconnectSocket: () => {
+            if (get().socket?.connected) get().socket.disconnect();
         }
     }
 })
