@@ -11,9 +11,9 @@ const ChatContainer = () => {
   const { messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  const messageEndRef2 = useRef(null);
-
+  
   useEffect(() => {
+    console.log("Selected User:", selectedUser);
     getMessages(selectedUser._id);
     subscribeToMessages();
     return () => unsubscribeFromMessages();
@@ -45,10 +45,10 @@ const ChatContainer = () => {
           <div
             ref={messageEndRef}
             key={ix}
-            className={`chat ${message.senderId === authUser._id ? ' chat-end' : ' chat-start'}`}>
+            className={`chat ${message.senderId == authUser.id ? 'chat-end' : 'chat-start'}`}>
             <div className='chat-image avatar'>
               <div className='size-10 rouded-full border'>
-                <img src={message.senderId === authUser._id ? authUser.profilePic || '/avatar.png' : selectedUser.profilePic || '/avatar.png'} alt='profile pic' />
+                <img src={message.senderId === authUser.id ? authUser.profilePic || '/avatar.png' : selectedUser.profilePic || '/avatar.png'} alt='profile pic' />
               </div>
             </div>
             <div className="chat-header mb-1">

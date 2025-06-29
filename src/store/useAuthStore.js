@@ -19,8 +19,10 @@ export const useAuthStore = create((set, get) => {
             try {
                 const res = await axiosInstance.get('auth/check');
                 if (res.status === 200) {
-                    set({ authUser: res.data })
-                    get().connectSocket();
+                    set({ authUser: res.data.user })
+                    console.log(res.data.user)
+                    console.log(res.data.user.id)
+                    get().connectSocket(res.data.user.id);
                     toast.success("Logged in successfully!");
                 }
             } catch (error) {
@@ -37,8 +39,10 @@ export const useAuthStore = create((set, get) => {
                 set({ isSigningUp: true });
                 const res = await axiosInstance.post('auth/signup', data);
                 if (res.status === 200) {
-                    set({ authUser: res.data })
-                    get().connectSocket();
+                    set({ authUser: res.data.user })
+                    console.log(res.data.user)
+                    console.log(res.data.user.id)
+                    get().connectSocket(res.data.user.id);
                     toast.success("Account created successfully!");
                 }
             } catch (error) {
@@ -54,8 +58,10 @@ export const useAuthStore = create((set, get) => {
                 set({ isLoggingIn: true });
                 const res = await axiosInstance.post('auth/login', data);
                 if (res.status === 200) {
-                    set({ authUser: res.data })
-                    get().connectSocket();
+                    set({ authUser: res.data.user })
+                    console.log(res.data.user)
+                    console.log(res.data.user.id)
+                    get().connectSocket(res.data.user.id);
                     toast.success("Logged in successfully!");
                 }
             } catch (error) {
@@ -82,7 +88,7 @@ export const useAuthStore = create((set, get) => {
             try {
                 set({ isUpdatingProfile: true });
                 const res = await axiosInstance.put('auth/update-profile', data);
-                set({ authUser: res.data });
+                set({ authUser: res.data.user });
                 toast.success("Profile updated successfully!");
             } catch (error) {
                 console.error("Error updating profile:", error);
@@ -93,25 +99,27 @@ export const useAuthStore = create((set, get) => {
             }
         },
 
-        connectSocket: () => {
+        connectSocket: (userId) => {
             try {
-                const authUser = get().authUser;
-                console.log(authUser);
-                if (!authUser) return;
+                console.log('user id:', userId);
                 const socket = io("http://localhost:5001", {
                     query: {
-                        userId: authUser._id,
+                        userId: userId
                     }
                 });
-                socket.connect();
                 set({ socket: socket });
                 socket.on("getOnlineUsers", (userIds) => {
                     set({ onlineUsers: userIds });
                     console.log("Online users:", userIds);
                 })
-                if (socket.connected) {
+                socket.on('connect', () => {
                     console.log("Socket connected");
-                }
+                })
+                socket.on('disconnect', () => {
+                    console.log("Socket disconnected");
+                })
+                socket.connect();
+
             } catch (error) {
                 console.log("error connecting socket:", error);
                 toast.error("Error connecting to socket. Please try again.");
@@ -119,7 +127,11 @@ export const useAuthStore = create((set, get) => {
         },
 
         disconnectSocket: () => {
-            if (get().socket?.connected) get().socket.disconnect();
+            const socket = get().socket;
+            if (!socket) return;
+            socket.disconnect();
+            set({ socket: null })
+            return;
         }
     }
 })
